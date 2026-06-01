@@ -37,6 +37,14 @@ Tampermonkey — это расширение, которое запускает 
 
 ## Шаг 2. Добавить скрипт Max Media Downloader
 
+**Ссылка на скрипт** (откройте → скопируйте весь код → вставьте в Tampermonkey):
+
+https://github.com/alekseichmsk/max-media-downloader/blob/main/max-zip.js
+
+Быстрая установка (Tampermonkey предложит установку сам):
+
+https://github.com/alekseichmsk/max-media-downloader/raw/main/max-zip.js
+
 **Видео на YouTube (рекомендуем):** [Смотреть инструкцию](https://youtu.be/LWGP_au76Kg)
 
 [![Установка скрипта в Tampermonkey — открыть на YouTube](https://img.youtube.com/vi/LWGP_au76Kg/hqdefault.jpg)](https://youtu.be/LWGP_au76Kg)
@@ -97,7 +105,7 @@ Tampermonkey — это расширение, которое запускает 
 
 | Файл | Назначение |
 |------|------------|
-| `max-zip.js` | Сам userscript — его ставят в Tampermonkey |
+| [max-zip.js](https://github.com/alekseichmsk/max-media-downloader/blob/main/max-zip.js) | Сам userscript — его ставят в Tampermonkey |
 | `docs/install-max-media-downloader.gif` | GIF для README — установка скрипта |
 | `docs/install-max-media-downloader.mp4` | Полное видео (Git LFS) |
 | `README.md` | Эта инструкция |
