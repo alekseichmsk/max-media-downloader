@@ -37,7 +37,9 @@ Tampermonkey — это расширение, которое запускает 
 
 ## Шаг 2. Добавить скрипт Max Media Downloader
 
-<video controls width="100%" src="docs/install-max-media-downloader.mp4"></video>
+![Установка скрипта в Tampermonkey](docs/install-max-media-downloader.gif)
+
+Полное видео в хорошем качестве: [install-max-media-downloader.mp4](docs/install-max-media-downloader.mp4) (файл большой, через Git LFS).
 
 ---
 
@@ -92,7 +94,8 @@ Tampermonkey — это расширение, которое запускает 
 | Файл | Назначение |
 |------|------------|
 | `max-zip.js` | Сам userscript — его ставят в Tampermonkey |
-| `docs/install-max-media-downloader.mp4` | Видео: установка скрипта в Tampermonkey |
+| `docs/install-max-media-downloader.gif` | GIF для README — установка скрипта |
+| `docs/install-max-media-downloader.mp4` | Полное видео (Git LFS) |
 | `README.md` | Эта инструкция |
 
 ---
