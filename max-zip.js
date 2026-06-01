@@ -1,19 +1,24 @@
 // ==UserScript==
 // @name         Max.ru - ZIP Архиватор (чистый)
 // @namespace    http://tampermonkey.net/
-// @version      8.4
+// @version      8.5
 // @description  Скачивание медиа из меню «⋯» — ZIP или папка
-// @author       Ты
+// @author       alekseichmsk
+// @updateURL    https://github.com/alekseichmsk/max-media-downloader/raw/main/max-zip.js
+// @downloadURL  https://github.com/alekseichmsk/max-media-downloader/raw/main/max-zip.js
 // @match        https://web.max.ru/*
 // @require      https://cdn.jsdelivr.net/npm/fflate@0.8.2/umd/index.js
 // @connect      i.oneme.ru
 // @connect      okcdn.ru
 // @connect      *.okcdn.ru
 // @connect      maxvd*
+// @connect      raw.githubusercontent.com
 // @connect      *
 // @grant        GM_xmlhttpRequest
 // @grant        GM_download
 // @grant        GM_addStyle
+// @grant        GM_getValue
+// @grant        GM_setValue
 // ==/UserScript==
 (function () {
     'use strict';
@@ -56,6 +61,37 @@
             color: rgba(255, 255, 255, 0.5);
             font-variant-numeric: tabular-nums;
         }
+        .mx-dl-update {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin: 0 8px 6px;
+            padding: 8px 10px;
+            border-radius: 10px;
+            font-size: 12px;
+            line-height: 1.3;
+            color: rgba(255, 255, 255, 0.9);
+            background: rgba(91, 156, 255, 0.18);
+            border: 1px solid rgba(91, 156, 255, 0.35);
+        }
+        .mx-dl-update a {
+            color: #8ec1ff;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        .mx-dl-update a:hover { text-decoration: underline; }
+        .mx-dl-update__close {
+            flex-shrink: 0;
+            border: none;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.55);
+            cursor: pointer;
+            font-size: 16px;
+            line-height: 1;
+            padding: 0 4px;
+        }
+        .mx-dl-update__close:hover { color: #fff; }
     `);
     const MENU_ICON_IDS = {
         zip: [
@@ -79,6 +115,10 @@
             '<path fill="currentColor" d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2zm0 2h7.17L18 8H10V6zm-6 4h16v10H4V10z"/>',
     };
     const LOG = '[Max ZIP]';
+    const SCRIPT_UPDATE_URL =
+        'https://github.com/alekseichmsk/max-media-downloader/raw/main/max-zip.js';
+    const REPO_URL = 'https://github.com/alekseichmsk/max-media-downloader';
+    const UPDATE_CHECK_MS = 12 * 60 * 60 * 1000;
     const JPEG_QUALITY = 0.92;
     const zipSync = typeof fflate !== 'undefined' && fflate.zipSync;
     const UA = navigator.userAgent;
@@ -93,6 +133,80 @@
 
     function getComposerHost() {
         return document.querySelector('[data-testid="composer"]');
+    }
+
+    function getCurrentVersion() {
+        return typeof GM_info !== 'undefined' && GM_info.script?.version ? GM_info.script.version : '0';
+    }
+
+    function isNewerVersion(remote, local) {
+        const toParts = (v) => String(v).split('.').map((n) => parseInt(n, 10) || 0);
+        const a = toParts(remote);
+        const b = toParts(local);
+        const len = Math.max(a.length, b.length);
+        for (let i = 0; i < len; i++) {
+            const x = a[i] || 0;
+            const y = b[i] || 0;
+            if (x > y) return true;
+            if (x < y) return false;
+        }
+        return false;
+    }
+
+    function showUpdateBanner(remoteVersion) {
+        const composer = getComposerHost();
+        if (!composer || composer.querySelector('.mx-dl-update')) return;
+
+        const mount =
+            composer.querySelector('.composer.svelte-nwz8cp') ||
+            composer.querySelector('.composer') ||
+            composer;
+
+        const bar = document.createElement('div');
+        bar.className = 'mx-dl-update';
+        bar.innerHTML = `
+            <span>Доступна версия <b>${remoteVersion}</b> (у вас ${getCurrentVersion()})</span>
+            <a href="${SCRIPT_UPDATE_URL}" target="_blank" rel="noopener">Скачать</a>
+        `;
+
+        const close = document.createElement('button');
+        close.type = 'button';
+        close.className = 'mx-dl-update__close';
+        close.setAttribute('aria-label', 'Скрыть');
+        close.textContent = '×';
+        close.onclick = () => {
+            GM_setValue('update_dismissed', remoteVersion);
+            bar.remove();
+        };
+
+        bar.appendChild(close);
+        mount.insertBefore(bar, mount.firstChild);
+    }
+
+    function checkForUpdates() {
+        const now = Date.now();
+        const lastCheck = GM_getValue('update_check_ts', 0);
+        if (now - lastCheck < UPDATE_CHECK_MS) return;
+        GM_setValue('update_check_ts', now);
+
+        const current = getCurrentVersion();
+        GM_xmlhttpRequest({
+            method: 'GET',
+            url: SCRIPT_UPDATE_URL,
+            timeout: 20000,
+            headers: { Accept: 'text/plain,*/*' },
+            onload: (res) => {
+                if (res.status !== 200 || !res.responseText) return;
+                const match = res.responseText.match(/@version\s+([\d.]+)/);
+                if (!match) return;
+                const remote = match[1];
+                if (!isNewerVersion(remote, current)) return;
+                if (GM_getValue('update_dismissed', '') === remote) return;
+                showUpdateBanner(remote);
+                console.log(LOG, 'update available', remote, 'current', current);
+            },
+            onerror: () => console.warn(LOG, 'update check failed'),
+        });
     }
 
     function ensureProgressBar() {
@@ -807,4 +921,5 @@
         if (m.some((r) => r.addedNodes.length)) scan();
     }).observe(document.body, { childList: true, subtree: true });
     scan();
+    checkForUpdates();
 })();
