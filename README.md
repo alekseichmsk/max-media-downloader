@@ -37,13 +37,16 @@ Tampermonkey — это расширение, которое запускает 
 
 ## Шаг 2. Добавить скрипт Max Media Downloader
 
-**Ссылка на скрипт** (откройте → скопируйте весь код → вставьте в Tampermonkey):
+**Быстрая установка** — Tampermonkey предложит установку сам.
 
-https://github.com/alekseichmsk/max-media-downloader/blob/main/max-zip.js
+1. [Открыть ссылку для установки](https://github.com/alekseichmsk/max-media-downloader/raw/main/max-zip.js) в браузере, **или**
+2. Скопировать адрес ниже (на GitHub — кнопка **Copy** справа в блоке):
 
-Быстрая установка (Tampermonkey предложит установку сам):
-
+```
 https://github.com/alekseichmsk/max-media-downloader/raw/main/max-zip.js
+```
+
+Вставьте скопированный адрес в адресную строку браузера и нажмите Enter.
 
 **Видео на YouTube (рекомендуем):** [Смотреть инструкцию](https://youtu.be/LWGP_au76Kg)
 
@@ -105,7 +108,7 @@ https://github.com/alekseichmsk/max-media-downloader/raw/main/max-zip.js
 
 | Файл | Назначение |
 |------|------------|
-| [max-zip.js](https://github.com/alekseichmsk/max-media-downloader/blob/main/max-zip.js) | Сам userscript — его ставят в Tampermonkey |
+| [max-zip.js](https://github.com/alekseichmsk/max-media-downloader/raw/main/max-zip.js) | Сам userscript — установка через Tampermonkey |
 | `docs/install-max-media-downloader.gif` | GIF для README — установка скрипта |
 | `docs/install-max-media-downloader.mp4` | Полное видео (Git LFS) |
 | `README.md` | Эта инструкция |
